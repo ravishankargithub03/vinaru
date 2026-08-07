@@ -1,0 +1,31 @@
+services:
+  accounts-backend:
+    build:
+      context: ./accounts-backend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    environment:
+      PORT: 4200
+    restart: unless-stopped
+
+  vpn-backend:
+    build:
+      context: ./vpn-backend
+      dockerfile: Dockerfile
+    ports:
+      - "4100:4100"
+    environment:
+      PORT: 4100
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - accounts-backend
+      - vpn-backend
+    restart: unless-stopped
