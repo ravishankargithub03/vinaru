@@ -1,0 +1,116 @@
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px 80px;
+}
+
+/* Logo: just the letter "V" */
+.logo {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 1;
+  margin-bottom: 24px;
+  color: #3b7cf6;
+}
+
+.title {
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+
+.tagline {
+  color: #9a9aa3;
+  font-size: 16px;
+  margin-bottom: 32px;
+}
+
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #3b7cf6;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(59, 124, 246, 0.35);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.download-btn:hover {
+  background: #2f6ce8;
+  transform: translateY(-1px);
+}
+
+.download-hint {
+  color: #7a7a82;
+  font-size: 13px;
+  margin-top: 12px;
+  margin-bottom: 40px;
+}
+
+.platforms {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.platform-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.platform-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #7a7a82;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.pill-row {
+  display: flex;
+  gap: 10px;
+}
+
+.pill {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7a7a82;
+  background: transparent;
+  border: 1px solid #33333a;
+  border-radius: 999px;
+  padding: 8px 18px;
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill-active {
+  color: #ffffff;
+  border-color: #3b7cf6;
+  cursor: default;
+}
+
+.soon {
+  font-size: 9px;
+  font-weight: 700;
+  color: #5a5a62;
+  text-transform: uppercase;
+}

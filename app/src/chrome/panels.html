@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>panels</title>
+  <link rel="stylesheet" href="panels.css" />
+</head>
+<body>
+  <div class="vpn-panel" id="vpnPanel">
+    <div class="vpn-panel-header">
+      <span>VPN</span>
+      <button class="profile-close" id="vpnClose">&times;</button>
+    </div>
+
+    <div class="vpn-status-block">
+      <div class="vpn-status-row">
+        <span class="vpn-status-label" id="vpnStatusLabel">Not connected</span>
+        <span class="vpn-badge" id="vpnSimBadge" style="display:none">Simulated</span>
+      </div>
+      <button class="vpn-connect-btn" id="vpnConnectBtn">Connect</button>
+    </div>
+
+    <div class="vpn-details" id="vpnDetails" style="display:none">
+      <div class="vpn-detail-row"><span>Server</span><span id="vpnDetailServer">-</span></div>
+      <div class="vpn-detail-row"><span>IP address</span><span id="vpnDetailIp">-</span></div>
+      <div class="vpn-detail-row"><span>Protocol</span><span id="vpnDetailProtocol">-</span></div>
+      <div class="vpn-detail-row"><span>Session</span><span id="vpnDetailSession">-</span></div>
+      <div class="vpn-detail-row"><span>Ping</span><span id="vpnDetailPing">-</span></div>
+      <div class="vpn-detail-row"><span>Upload / Download</span><span id="vpnDetailSpeed">-</span></div>
+      <div class="vpn-detail-row"><span>Data transferred</span><span id="vpnDetailData">-</span></div>
+    </div>
+
+    <div class="vpn-servers" id="vpnServers"></div>
+
+    <div class="vpn-toggles">
+      <div class="vpn-toggle-row">
+        <span>Kill switch<small id="vpnKillSwitchNote"></small></span>
+        <input type="checkbox" id="killSwitchToggle" />
+      </div>
+      <div class="vpn-toggle-row">
+        <span>WebRTC leak protection</span>
+        <input type="checkbox" id="webrtcToggle" />
+      </div>
+      <div class="vpn-toggle-row">
+        <span>DNS over HTTPS</span>
+        <input type="checkbox" id="dohToggle" />
+      </div>
+      <div class="vpn-toggle-row">
+        <span>Tracker blocking</span>
+        <input type="checkbox" id="trackerToggle" />
+      </div>
+      <div class="vpn-toggle-row">
+        <span>HTTPS-only mode</span>
+        <input type="checkbox" id="httpsOnlyToggle" />
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-panel" id="profilePanel">
+    <div class="profile-panel-header">
+      <span id="profileHeaderLabel">Guest profile</span>
+      <button class="profile-close" id="profileClose">&times;</button>
+    </div>
+
+    <div class="profile-panel-body">
+      <span class="profile-panel-avatar" id="panelAvatarSlot"></span>
+      <div class="profile-greeting" id="profileGreeting">Hi, Guest!</div>
+      <button class="profile-manage-btn" id="manageBtn" data-nav="attach://app/profile-manager/index.html">Manage profile</button>
+    </div>
+
+    <div class="profile-list">
+      <button class="profile-list-item" id="signOutBtn" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Sign out</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="profile-panel" id="morePanel">
+    <div class="profile-panel-header">
+      <button class="apps-back-btn" id="appsBackBtn" style="display:none" title="Back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <span id="moreHeaderLabel">Menu</span>
+      <button class="profile-close" id="moreClose">&times;</button>
+    </div>
+
+    <div id="moreMainView">
+      <div class="profile-row-pair" style="margin-top:14px">
+        <button data-nav="attach://app/bookmarks.html">Bookmarks</button>
+        <button data-nav="attach://app/history.html">History</button>
+      </div>
+
+      <div class="profile-list">
+        <button class="profile-list-item" id="appsMenuBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="19" cy="5" r="1.6" fill="currentColor"/><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/><circle cx="5" cy="19" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/><circle cx="19" cy="19" r="1.6" fill="currentColor"/></svg>
+          <span>Apps</span>
+        </button>
+        <button class="profile-list-item" data-nav="attach://app/downloads.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Downloads</span>
+        </button>
+        <button class="profile-list-item" id="clearDataBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Clear browsing data</span>
+        </button>
+        <button class="profile-list-item" data-nav="attach://app/settings.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H2a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V2a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H22a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          <span>Settings</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="moreAppsView" style="display:none">
+      <div class="apps-grid">
+        <button class="app-tile" data-nav="https://mail.google.com/mail/">
+          <span class="app-tile-icon" style="background:#ea4335">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18v12H3z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 6l9 7 9-7" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </span>
+          <span>Inbox</span>
+        </button>
+        <button class="app-tile" data-nav="https://drive.google.com/">
+          <span class="app-tile-icon" style="background:#1a73e8">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M8 3l8 0 6 10-3 5-8 0-6-10z" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 18l3-5M18 18l-3-5" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          </span>
+          <span>Drive</span>
+        </button>
+        <button class="app-tile" data-nav="https://photos.google.com/">
+          <span class="app-tile-icon" style="background:#fbbc04">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="#fff" stroke-width="1.6"/><circle cx="9" cy="10" r="1.8" fill="#fff"/><path d="M4 17l5-5 4 4 3-3 4 4" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </span>
+          <span>Photos</span>
+        </button>
+        <button class="app-tile" data-nav="https://keep.google.com/">
+          <span class="app-tile-icon" style="background:#f2b807">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 4v6M9 3h6l-1 7h-4z" fill="#fff"/><rect x="7" y="10" width="10" height="10" rx="1.5" stroke="#fff" stroke-width="1.6"/></svg>
+          </span>
+          <span>Keep</span>
+        </button>
+        <button class="app-tile" data-nav="https://docs.google.com/">
+          <span class="app-tile-icon" style="background:#4285f4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l4 4v14H7z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 11h6M9 14h6M9 17h4" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </span>
+          <span>Docs</span>
+        </button>
+        <button class="app-tile" data-nav="https://chat.google.com/">
+          <span class="app-tile-icon" style="background:#34a853">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v10H9l-5 4z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </span>
+          <span>Chat</span>
+        </button>
+        <button class="app-tile" data-nav="https://maps.google.com/">
+          <span class="app-tile-icon" style="background:#ea4335">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9" r="2.3" stroke="#fff" stroke-width="1.6"/></svg>
+          </span>
+          <span>Maps</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="panels.js"></script>
+</body>
+</html>

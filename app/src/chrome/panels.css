@@ -1,0 +1,279 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: transparent;
+  color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* This page is rendered inside its own WebContentsView, positioned and
+   sized by the main process to exactly match whichever panel below is
+   visible — so panels use static/normal-flow layout here, not the
+   position:fixed anchoring the old single-window chrome UI used. */
+
+.vpn-panel {
+  display: none;
+  width: 320px;
+  max-height: 100vh;
+  overflow-y: auto;
+  background: #17171a;
+  border: 1px solid #262629;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+.vpn-panel.open { display: block; }
+
+.vpn-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f5f5f5;
+  border-bottom: 1px solid #232328;
+}
+
+.vpn-status-block {
+  padding: 16px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #232328;
+}
+.vpn-status-row { display: flex; align-items: center; gap: 8px; }
+.vpn-status-label { font-size: 14px; font-weight: 600; }
+.vpn-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #f2b807;
+  border: 1px solid #4a3c10;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.vpn-connect-btn {
+  width: 100%;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: #3b7cf6;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 0;
+  cursor: pointer;
+}
+.vpn-connect-btn:hover { background: #2f6ce8; }
+.vpn-connect-btn.connected { background: #ef4b4b; }
+.vpn-connect-btn.connected:hover { background: #d83f3f; }
+.vpn-connect-btn:disabled { opacity: 0.6; cursor: default; }
+
+.vpn-details {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #232328;
+  font-size: 12px;
+}
+.vpn-detail-row { display: flex; justify-content: space-between; color: #9a9aa3; }
+.vpn-detail-row span:last-child { color: #f5f5f5; font-weight: 600; }
+
+.vpn-servers {
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-bottom: 1px solid #232328;
+}
+.vpn-server-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #141416;
+  border: 1px solid #1f1f23;
+  cursor: pointer;
+  font-size: 12px;
+}
+.vpn-server-row:hover { background: #1c1c20; }
+.vpn-server-row.active { border-color: #3b7cf6; }
+.vpn-server-main { display: flex; flex-direction: column; gap: 2px; }
+.vpn-server-title { font-weight: 600; }
+.vpn-server-sub { color: #7a7a82; font-size: 11px; }
+
+.vpn-toggles { padding: 6px 16px 14px; display: flex; flex-direction: column; gap: 10px; }
+.vpn-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.vpn-toggle-row small { display: block; color: #7a7a82; font-size: 10px; margin-top: 2px; }
+
+/* ---- Profile / More panels ---- */
+.profile-panel {
+  display: none;
+  width: 300px;
+  background: #17171a;
+  border: 1px solid #262629;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.profile-panel.open { display: block; }
+
+.profile-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #9a9aa3;
+  border-bottom: 1px solid #232328;
+}
+.profile-close {
+  background: transparent;
+  border: none;
+  color: #9a9aa3;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.profile-close:hover { background: #232328; color: #fff; }
+
+.profile-panel-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+}
+.profile-panel-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+#panelAvatarSlot svg, #panelAvatarSlot img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.panel-avatar-initial {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+.profile-greeting { font-size: 15px; font-weight: 700; }
+.profile-manage-btn {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f5f5f5;
+  background: transparent;
+  border: 1px solid #33333a;
+  border-radius: 999px;
+  padding: 7px 16px;
+  cursor: pointer;
+}
+.profile-manage-btn:hover { background: #232328; }
+
+.profile-row-pair {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 14px;
+}
+.profile-row-pair button {
+  flex: 1;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f5f5f5;
+  background: #1f1f23;
+  border: 1px solid #2a2a30;
+  border-radius: 8px;
+  padding: 9px 0;
+  cursor: pointer;
+}
+.profile-row-pair button:hover { background: #262629; }
+
+.profile-list {
+  border-top: 1px solid #232328;
+  padding: 6px;
+}
+.profile-list-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #f5f5f5;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 10px;
+  cursor: pointer;
+  text-align: left;
+}
+.profile-list-item:hover { background: #1f1f23; }
+.profile-list-item svg { flex-shrink: 0; color: #9a9aa3; }
+
+.apps-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #9a9aa3;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  margin-right: 4px;
+}
+.apps-back-btn:hover { background: #232328; color: #fff; }
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 10px;
+}
+.app-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  color: #f5f5f5;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 4px;
+  cursor: pointer;
+}
+.app-tile:hover { background: #1f1f23; }
+.app-tile-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

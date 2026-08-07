@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>History</title>
+  <link rel="stylesheet" href="pages.css" />
+</head>
+<body>
+  <div class="page">
+    <h1>History</h1>
+    <div class="toolbar-row">
+      <input id="searchInput" type="search" placeholder="Search history" style="flex:1" />
+      <button id="clearHourBtn">Clear last hour</button>
+      <button id="clearTodayBtn">Clear today</button>
+      <button class="danger" id="clearAllBtn">Clear all</button>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="empty" id="empty" style="display:none">No browsing history yet.</div>
+  </div>
+  <script src="history.js"></script>
+</body>
+</html>

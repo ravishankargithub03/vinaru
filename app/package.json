@@ -1,0 +1,58 @@
+{
+  "name": "vinaru-browser",
+  "productName": "Vinaru",
+  "version": "1.0.0",
+  "description": "Vinaru desktop browser",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "dist:mac": "electron-builder --mac"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  },
+  "devDependencies": {
+    "electron": "^32.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.vinaru.browser",
+    "productName": "Vinaru",
+    "icon": "build/icon.png",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "artifactName": "vinaru-setup-${version}.${ext}"
+    },
+    "linux": {
+      "target": ["zip"],
+      "category": "Network",
+      "artifactName": "vinaru-${version}-linux.${ext}"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.productivity",
+      "artifactName": "vinaru-${version}.${ext}"
+    }
+  }
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vinaru</title>
+  <link rel="stylesheet" href="chrome.css" />
+</head>
+<body>
+  <div class="tabstrip" id="tabstrip">
+    <div class="tabs" id="tabs"></div>
+    <button class="new-tab-btn" id="newTabBtn" title="New Tab (Ctrl+T)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="tabstrip-spacer"></div>
+    <div class="window-controls">
+      <button class="window-btn" id="winMinimizeBtn" title="Minimize">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button class="window-btn" id="winMaximizeBtn" title="Maximize">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button class="window-btn window-close-btn" id="winCloseBtn" title="Close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="nav-btn" id="backBtn" title="Back (Alt+Left)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="nav-btn" id="forwardBtn" title="Forward (Alt+Right)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="nav-btn" id="reloadBtn" title="Reload (Ctrl+R)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 1 3 6.7M3 12V6m0 6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="nav-btn" id="homeBtn" title="Home">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M3 11l9-8 9 8M5 10v10h14V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="address-bar">
+      <span class="security-indicator" id="securityIndicator"></span>
+      <input id="addressInput" type="text" spellcheck="false" placeholder="Search or enter address" />
+      <button class="star-btn" id="starBtn" title="Bookmark this page">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.8 5.5 21l2-7.5L2 9h7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <button class="profile-icon-btn" id="profileIconBtn" title="Profile">
+      <span id="toolbarAvatarSlot"></span>
+    </button>
+    <button class="icon-btn" id="incognitoBtn" title="New incognito tab">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+        <path d="M3 13c1.5-4 4.5-6 9-6s7.5 2 9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="7" cy="14.5" r="2.6" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="17" cy="14.5" r="2.6" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M9.6 14.5h4.8M3 13l-1.5 1.5M21 13l1.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button class="icon-btn" id="vpnBtn" title="VPN">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span class="vpn-dot" id="vpnDot"></span>
+    </button>
+    <button class="icon-btn" id="moreBtn" title="More">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="19" r="1.8" fill="currentColor"/></svg>
+    </button>
+  </div>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <script src="chrome.js"></script>
+</body>
+</html>
