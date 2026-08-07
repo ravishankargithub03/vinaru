@@ -69,7 +69,7 @@ export default function App() {
       <p className="download-hint">
         {platform === "linux"
           ? "Download, unzip, then run ./vinaru-browser to launch the browser."
-          : "Download, then open it to launch the Vinaru browser."}
+          : "Download the Windows installer, then run it to launch the Vinaru browser."}
       </p>
 
       <div className="platforms">
