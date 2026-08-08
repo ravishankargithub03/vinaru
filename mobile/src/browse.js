@@ -1,5 +1,6 @@
-import { Capacitor } from "@capacitor/core";
-import { Browser } from "@capacitor/browser";
+import { Capacitor, registerPlugin } from "@capacitor/core";
+
+const VinaruBrowser = registerPlugin("VinaruBrowser");
 
 export function resolveInput(raw) {
   const input = (raw || "").trim();
@@ -10,6 +11,7 @@ export function resolveInput(raw) {
   return "https://www.google.com/search?q=" + encodeURIComponent(input);
 }
 
+/** Open URL inside Vinaru (native WebView) — never hand off to Chrome/other browsers. */
 export async function openUrl(url) {
   if (!url) return;
 
@@ -18,13 +20,9 @@ export async function openUrl(url) {
     return;
   }
 
-  await Browser.open({ url, toolbarColor: "#0b0b0f" });
+  await VinaruBrowser.open({ url });
 }
 
 export async function closeBrowser() {
-  try {
-    await Browser.close();
-  } catch {
-    /* ignore */
-  }
+  // BrowserActivity is closed with its Home / system back when history is empty.
 }

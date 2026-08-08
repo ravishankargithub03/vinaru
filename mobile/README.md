@@ -4,7 +4,9 @@ Android build of Vinaru using the same approach as Oryx (`demo-proj-source`):
 
 **Vite + React UI → Capacitor → Android System WebView APK**
 
-This is a mobile browser shell (address bar, tabs, Google search / URL navigation). It is **not** a full Chromium/Electron port — browsing uses an in-app WebView (`@capgo/inappbrowser`), same class of app as Oryx.
+This is a mobile browser shell (address bar, tabs, Google search / URL navigation). It is **not** a full Chromium/Electron port.
+
+Searching/opening links uses Vinaru’s own **in-app WebView** (`BrowserActivity`) with back/forward/reload — it does **not** open Chrome or another browser app.
 
 ## Setup (once)
 
