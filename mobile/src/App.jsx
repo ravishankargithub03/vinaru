@@ -12,54 +12,37 @@ const SHORTCUTS = [
   { title: "Ruachvi", url: "https://ruachvi.com" },
 ];
 
-const IconBack = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-    <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-const IconForward = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-    <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-const IconReload = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path d="M3 12a9 9 0 1 1 3 6.7M3 12V6m0 6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
 const IconHome = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-    <path d="M3 11l9-8 9 8M5 10v10h14V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <path d="M3 11l9-8 9 8M5 10v10h14V10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
-const IconStar = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.8 5.5 21l2-7.5L2 9h7z"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
-    />
+const IconBookmark = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <path d="M6 4h12v17l-6-3.5L6 21V4z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
   </svg>
 );
-const IconIncognito = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-    <path d="M3 13c1.5-4 4.5-6 9-6s7.5 2 9 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    <circle cx="7" cy="14.5" r="2.6" stroke="currentColor" strokeWidth="1.6" />
-    <circle cx="17" cy="14.5" r="2.6" stroke="currentColor" strokeWidth="1.6" />
-    <path d="M9.6 14.5h4.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-  </svg>
-);
-const IconVpn = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+const IconSearch = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
   </svg>
 );
 const IconMore = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="5" r="1.8" fill="currentColor" />
-    <circle cx="12" cy="12" r="1.8" fill="currentColor" />
-    <circle cx="12" cy="19" r="1.8" fill="currentColor" />
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="5" r="1.7" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.7" fill="currentColor" />
+    <circle cx="12" cy="19" r="1.7" fill="currentColor" />
+  </svg>
+);
+const IconShield = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+    <path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+  </svg>
+);
+const IconClose = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+    <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
@@ -91,11 +74,10 @@ export default function App() {
   const [draft, setDraft] = useState("");
   const [starred, setStarred] = useState(() => new Set());
   const [menuOpen, setMenuOpen] = useState(false);
+  const [tabsOpen, setTabsOpen] = useState(false);
   const [toast, setToast] = useState("");
 
   const active = useMemo(() => tabs.find((t) => t.id === activeId) || tabs[0], [tabs, activeId]);
-  const canGoBack = Boolean(active?.url);
-  const canGoForward = false;
 
   const showToast = useCallback((msg) => {
     setToast(msg);
@@ -116,6 +98,7 @@ export default function App() {
       setDraft(displayUrl(url));
       updateActive({ url, title: hostnameOf(url) });
       setMenuOpen(false);
+      setTabsOpen(false);
       await openUrl(url);
     },
     [updateActive]
@@ -132,13 +115,17 @@ export default function App() {
         setMenuOpen(false);
         return;
       }
+      if (tabsOpen) {
+        setTabsOpen(false);
+        return;
+      }
       if (histBack) window.history.back();
       else CapApp.exitApp();
     });
     return () => {
       sub.then((h) => h.remove()).catch(() => {});
     };
-  }, [menuOpen]);
+  }, [menuOpen, tabsOpen]);
 
   function addTab(incognito = false) {
     const tab = newTab({ incognito });
@@ -146,6 +133,7 @@ export default function App() {
     setActiveId(tab.id);
     setDraft("");
     setMenuOpen(false);
+    setTabsOpen(false);
   }
 
   function closeTab(id) {
@@ -165,6 +153,17 @@ export default function App() {
     updateActive({ url: "", title: "New Tab" });
     setDraft("");
     setMenuOpen(false);
+    setTabsOpen(false);
+  }
+
+  function focusAddress() {
+    const input = document.getElementById("addressInput");
+    if (input) {
+      input.focus();
+      input.select();
+    }
+    setMenuOpen(false);
+    setTabsOpen(false);
   }
 
   function toggleStar() {
@@ -187,111 +186,112 @@ export default function App() {
 
   return (
     <div className={`shell ${active?.incognito ? "incognito" : ""}`}>
-      {/* Desktop-style tab strip — above toolbar / search */}
-      <div className="tabstrip">
-        <div className="tabs">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              className={`tab ${tab.id === activeId ? "active" : ""} ${tab.incognito ? "incognito" : ""}`}
-              onClick={() => setActiveId(tab.id)}
-            >
-              <span className="tab-title">{tab.title}</span>
-              <span
-                className="tab-close"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  closeTab(tab.id);
-                }}
-              >
-                ×
-              </span>
-            </button>
-          ))}
-        </div>
-        <button type="button" className="new-tab-btn" onClick={() => addTab(false)} aria-label="New tab" title="New Tab">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
+      {/* Brave-style top address bar — profile icon on the left */}
+      <form
+        className="top-omnibox"
+        onSubmit={(e) => {
+          e.preventDefault();
+          navigate(draft);
+        }}
+      >
+        <button
+          type="button"
+          className="profile-in-bar"
+          onClick={() => showToast("Profiles coming soon")}
+          title="Profile"
+          aria-label="Profile"
+        >
+          <span className="avatar">V</span>
         </button>
-      </div>
 
-      {/* Marked desktop toolbar section */}
-      <div className="toolbar">
-        <button type="button" className="nav-btn" disabled={!canGoBack} onClick={() => active?.url && navigate(active.url)} title="Back">
-          <IconBack />
-        </button>
-        <button type="button" className="nav-btn" disabled={!canGoForward} title="Forward">
-          <IconForward />
+        <input
+          id="addressInput"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Search Vinaru or type URL"
+          spellCheck={false}
+          autoCapitalize="off"
+          autoCorrect="off"
+          enterKeyHint="go"
+        />
+
+        <button
+          type="button"
+          className="omnibox-icon"
+          onClick={() => showToast("Shield / privacy coming soon")}
+          title="Shield"
+          aria-label="Shield"
+        >
+          <IconShield />
         </button>
         <button
           type="button"
-          className="nav-btn"
-          onClick={() => (active?.url ? navigate(active.url) : showToast("Nothing to reload"))}
-          title="Reload"
+          className={`omnibox-icon ${active?.url && starred.has(active.url) ? "starred" : ""}`}
+          onClick={toggleStar}
+          title="Bookmark"
+          aria-label="Bookmark"
         >
-          <IconReload />
+          <IconBookmark />
         </button>
-        <button type="button" className="nav-btn" onClick={goHome} title="Home">
-          <IconHome />
-        </button>
-
-        <form
-          className="address-bar"
-          onSubmit={(e) => {
-            e.preventDefault();
-            navigate(draft);
-          }}
-        >
-          <span className={`security-indicator ${active?.url ? "secure" : ""}`} />
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="Search or enter address"
-            spellCheck={false}
-            autoCapitalize="off"
-            autoCorrect="off"
-            enterKeyHint="go"
-          />
-          <button
-            type="button"
-            className={`star-btn ${active?.url && starred.has(active.url) ? "active" : ""}`}
-            onClick={toggleStar}
-            title="Bookmark"
-          >
-            <IconStar />
-          </button>
-        </form>
-
-        <button type="button" className="profile-icon-btn" onClick={() => showToast("Profiles coming soon")} title="Profile">
-          <span className="avatar">V</span>
-        </button>
-        <button type="button" className="icon-btn" onClick={() => addTab(true)} title="New incognito tab">
-          <IconIncognito />
-        </button>
-        <button type="button" className="icon-btn" onClick={() => showToast("VPN coming soon on Android")} title="VPN">
-          <IconVpn />
-        </button>
-        <button type="button" className="icon-btn" onClick={() => setMenuOpen((v) => !v)} title="More">
-          <IconMore />
-        </button>
-      </div>
+      </form>
 
       {menuOpen ? (
         <div className="more-menu">
-          <button type="button" onClick={() => { addTab(false); }}>
+          <button type="button" onClick={() => addTab(false)}>
             New tab
           </button>
-          <button type="button" onClick={() => { addTab(true); }}>
-            New incognito tab
+          <button type="button" onClick={() => addTab(true)}>
+            New private tab
           </button>
-          <button type="button" onClick={() => { goHome(); }}>
+          <button type="button" onClick={goHome}>
             Home / New Tab page
           </button>
-          <button type="button" onClick={() => { setMenuOpen(false); showToast("Settings coming soon"); }}>
+          <button
+            type="button"
+            onClick={() => {
+              setMenuOpen(false);
+              showToast("Settings coming soon");
+            }}
+          >
             Settings
           </button>
+        </div>
+      ) : null}
+
+      {tabsOpen ? (
+        <div className="tabs-sheet">
+          <div className="tabs-sheet-header">
+            <span>Tabs ({tabs.length})</span>
+            <button type="button" className="sheet-action" onClick={() => addTab(false)}>
+              + New
+            </button>
+          </div>
+          <div className="tabs-sheet-list">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`tabs-sheet-item ${tab.id === activeId ? "active" : ""} ${tab.incognito ? "incognito" : ""}`}
+                onClick={() => {
+                  setActiveId(tab.id);
+                  setTabsOpen(false);
+                }}
+              >
+                <span className="tabs-sheet-title">{tab.title}</span>
+                <span className="tabs-sheet-url">{tab.url ? hostnameOf(tab.url) : "New Tab"}</span>
+                <span
+                  className="tabs-sheet-close"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closeTab(tab.id);
+                  }}
+                  aria-label="Close tab"
+                >
+                  <IconClose />
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -323,6 +323,43 @@ export default function App() {
           ))}
         </div>
       </main>
+
+      {/* Brave-style bottom toolbar */}
+      <nav className="bottom-bar" aria-label="Browser tools">
+        <button type="button" className="bottom-btn" onClick={goHome} title="Home" aria-label="Home">
+          <IconHome />
+        </button>
+        <button type="button" className="bottom-btn" onClick={toggleStar} title="Bookmarks" aria-label="Bookmarks">
+          <IconBookmark />
+        </button>
+        <button type="button" className="bottom-btn" onClick={focusAddress} title="Search" aria-label="Search">
+          <IconSearch />
+        </button>
+        <button
+          type="button"
+          className={`bottom-btn tabs-count-btn ${tabsOpen ? "active" : ""}`}
+          onClick={() => {
+            setTabsOpen((v) => !v);
+            setMenuOpen(false);
+          }}
+          title="Tabs"
+          aria-label={`Tabs, ${tabs.length} open`}
+        >
+          <span className="tabs-count">{tabs.length}</span>
+        </button>
+        <button
+          type="button"
+          className={`bottom-btn ${menuOpen ? "active" : ""}`}
+          onClick={() => {
+            setMenuOpen((v) => !v);
+            setTabsOpen(false);
+          }}
+          title="More"
+          aria-label="More"
+        >
+          <IconMore />
+        </button>
+      </nav>
 
       {toast ? <div className="toast">{toast}</div> : null}
     </div>

@@ -1,11 +1,11 @@
 :root {
   color-scheme: dark;
   --bg: #0b0b0f;
-  --panel: #141418;
-  --tabstrip: #101014;
-  --border: #2a2a32;
+  --panel: #1a1a20;
+  --omnibox: #2a2a32;
+  --border: #33333c;
   --text: #f2f2f5;
-  --muted: #8a8a94;
+  --muted: #9a9aa4;
   --accent: #3b7cf6;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -42,204 +42,104 @@ input {
 
 .shell.incognito {
   --panel: #1a1520;
-  --tabstrip: #15101c;
+  --omnibox: #2a2035;
 }
 
-/* ---- Tab strip (top, above search / toolbar) ---- */
-.tabstrip {
+/* ---- Brave-style top omnibox ---- */
+.top-omnibox {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 8px 0;
-  background: var(--tabstrip);
-  border-bottom: 1px solid var(--border);
-  min-height: 44px;
-}
-
-.tabs {
-  display: flex;
   gap: 4px;
-  overflow-x: auto;
-  flex: 1;
-  min-width: 0;
-  padding-bottom: 8px;
+  margin: 10px 12px 8px;
+  padding: 4px 6px 4px 4px;
+  min-height: 48px;
+  background: var(--omnibox);
+  border-radius: 28px;
+  border: 1px solid transparent;
 }
 
-.tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  max-width: 150px;
-  min-width: 88px;
-  border: 0;
-  background: #1a1a20;
-  color: var(--muted);
-  border-radius: 10px 10px 0 0;
-  padding: 8px 8px 8px 12px;
-  flex-shrink: 0;
+.top-omnibox:focus-within {
+  border-color: rgba(59, 124, 246, 0.55);
+  box-shadow: 0 0 0 1px rgba(59, 124, 246, 0.2);
 }
 
-.tab.active {
-  color: var(--text);
-  background: var(--panel);
-}
-
-.tab.incognito {
-  background: #241a30;
-}
-
-.tab-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
-  flex: 1;
-  text-align: left;
-}
-
-.tab-close {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.tab-close:active {
-  background: #2a2a32;
-}
-
-.new-tab-btn {
-  width: 34px;
-  height: 34px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-}
-
-.new-tab-btn:active {
-  background: #1a1a20;
-  color: var(--text);
-}
-
-/* ---- Desktop-matching toolbar (marked area) ---- */
-.toolbar {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 8px 6px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-}
-
-.nav-btn,
-.icon-btn,
-.star-btn {
+/* Profile icon — Brave logo placement (left inside bar) */
+.profile-in-bar {
   width: 36px;
   height: 36px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 50%;
   background: transparent;
-  color: #c8c8d0;
+  padding: 0;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  padding: 0;
 }
 
-.nav-btn:disabled {
-  opacity: 0.35;
+.profile-in-bar:active {
+  filter: brightness(1.12);
 }
 
-.nav-btn:active:not(:disabled),
-.icon-btn:active,
-.star-btn:active,
-.profile-icon-btn:active {
-  background: #1f1f26;
-}
-
-.address-bar {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #0b0b0f;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0 4px 0 12px;
-  height: 36px;
-  margin: 0 4px;
-}
-
-.address-bar:focus-within {
-  border-color: var(--accent);
-}
-
-.security-indicator {
-  width: 8px;
-  height: 8px;
+.avatar {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: #5a5a62;
-  flex-shrink: 0;
+  background: var(--accent);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(59, 124, 246, 0.25);
 }
 
-.security-indicator.secure {
-  background: #34a853;
-}
-
-.address-bar input {
+.top-omnibox input {
   flex: 1;
   min-width: 0;
   border: 0;
   outline: 0;
   background: transparent;
   color: var(--text);
-  font-size: 14px;
+  font-size: 15px;
+  padding: 0 4px;
 }
 
-.star-btn.active {
-  color: #f5c542;
+.top-omnibox input::placeholder {
+  color: var(--muted);
 }
 
-.profile-icon-btn {
+.omnibox-icon {
   width: 36px;
   height: 36px;
   border: 0;
   border-radius: 50%;
   background: transparent;
-  padding: 0;
+  color: var(--muted);
   display: grid;
   place-items: center;
   flex-shrink: 0;
+  padding: 0;
 }
 
-.avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: white;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 700;
+.omnibox-icon:active {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
 }
 
+.omnibox-icon.starred {
+  color: #f5c542;
+}
+
+/* ---- More menu (Brave-like sheet from top) ---- */
 .more-menu {
   display: flex;
   flex-direction: column;
-  background: #1a1a22;
+  background: #1e1e26;
   border-bottom: 1px solid var(--border);
+  margin: 0 12px 8px;
+  border-radius: 14px;
   padding: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .more-menu button {
@@ -247,12 +147,103 @@ input {
   border: 0;
   background: transparent;
   color: var(--text);
-  padding: 12px 14px;
-  border-radius: 8px;
+  padding: 14px 14px;
+  border-radius: 10px;
+  font-size: 15px;
 }
 
 .more-menu button:active {
-  background: #25252e;
+  background: #2a2a34;
+}
+
+/* ---- Tabs switcher sheet ---- */
+.tabs-sheet {
+  margin: 0 12px 8px;
+  background: #1e1e26;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  max-height: 42dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.tabs-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.sheet-action {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+  padding: 4px 8px;
+}
+
+.tabs-sheet-list {
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.tabs-sheet-item {
+  position: relative;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px 40px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tabs-sheet-item.active {
+  background: #2a2a34;
+}
+
+.tabs-sheet-item.incognito {
+  color: #d4b8ff;
+}
+
+.tabs-sheet-title {
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tabs-sheet-url {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tabs-sheet-close {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.tabs-sheet-close:active {
+  background: #33333c;
+  color: var(--text);
 }
 
 /* ---- New Tab page ---- */
@@ -262,11 +253,13 @@ input {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px 20px 40px;
+  padding: 16px 20px 12px;
   text-align: center;
   background:
     radial-gradient(ellipse at top, rgba(59, 124, 246, 0.12), transparent 55%),
     var(--bg);
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .logo {
@@ -326,7 +319,7 @@ h1 {
 .shortcut-icon {
   width: 48px;
   height: 48px;
-  border-radius: 16px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
   background: #1a1a22;
@@ -344,10 +337,53 @@ h1 {
   white-space: nowrap;
 }
 
+/* ---- Brave-style bottom toolbar ---- */
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 4px;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: #121216;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.bottom-btn {
+  width: 48px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.bottom-btn:active,
+.bottom-btn.active {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.tabs-count-btn .tabs-count {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border: 1.8px solid currentColor;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
 .toast {
   position: fixed;
   left: 50%;
-  bottom: calc(24px + var(--safe-bottom));
+  bottom: calc(72px + var(--safe-bottom));
   transform: translateX(-50%);
   background: #22222a;
   border: 1px solid var(--border);

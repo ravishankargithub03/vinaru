@@ -37,6 +37,10 @@
       "google-oauth.json",
       "build/**/*"
     ],
+    "asarUnpack": [
+      "build/icon.ico",
+      "build/icon.png"
+    ],
     "win": {
       "icon": "build/icon.ico",
       "target": [
@@ -54,6 +58,7 @@
       "perMachine": false,
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
       "artifactName": "vinaru-setup-${version}.${ext}"
     },
     "linux": {

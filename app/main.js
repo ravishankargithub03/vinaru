@@ -1,10 +1,38 @@
-const { app, BrowserWindow, WebContentsView, Menu, ipcMain, protocol, shell, session, net } = require("electron");
+const { app, BrowserWindow, WebContentsView, Menu, ipcMain, protocol, shell, session, net, nativeImage } = require("electron");
 const path = require("path");
+const fs = require("fs");
 const crypto = require("crypto");
 const http = require("http");
 const Store = require("electron-store");
 const { createVpnManager } = require("./vpn/vpnManager");
 const { applyPrivacySettings, applyWebRTCPolicy } = require("./vpn/privacy");
+
+// Windows taskbar / Jump List: without this, Electron often shows the default icon.
+if (process.platform === "win32") {
+  app.setAppUserModelId("com.vinaru.browser");
+}
+
+function resolveAppIcon() {
+  const names = process.platform === "win32" ? ["icon.ico", "icon.png"] : ["icon.png", "icon.ico"];
+  const bases = [
+    path.join(__dirname, "build"),
+    path.join(__dirname.replace("app.asar", "app.asar.unpacked"), "build"),
+  ];
+  for (const base of bases) {
+    for (const name of names) {
+      const candidate = path.join(base, name);
+      if (fs.existsSync(candidate)) return candidate;
+    }
+  }
+  return undefined;
+}
+
+function loadAppIconImage() {
+  const iconPath = resolveAppIcon();
+  if (!iconPath) return undefined;
+  const image = nativeImage.createFromPath(iconPath);
+  return image.isEmpty() ? undefined : image;
+}
 
 let googleOAuthConfig = null;
 try {
@@ -579,17 +607,19 @@ function createBrowserWindowContext({ incognito = false } = {}) {
   const ctx = createContext(incognito);
   windowContexts.add(ctx);
 
+  const appIcon = loadAppIconImage();
   ctx.window = new BrowserWindow({
     width: 1280,
     height: 800,
     backgroundColor: "#0b0b0d",
-    icon: path.join(__dirname, "build", "icon.png"),
+    icon: appIcon || resolveAppIcon(),
     frame: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
     },
   });
+  if (appIcon) ctx.window.setIcon(appIcon);
 
   ctx.window.loadFile(path.join(__dirname, "src/chrome/index.html"), incognito ? { query: { incognito: "1" } } : undefined);
   registerShortcuts(ctx.window.webContents, ctx);

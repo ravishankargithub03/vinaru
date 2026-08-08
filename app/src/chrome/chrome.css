@@ -11,7 +11,7 @@ html, body {
 body.incognito-window { background: #14101c; }
 body.incognito-window .tabstrip { background: #1a1225; border-bottom-color: #2e2140; }
 body.incognito-window .toolbar { background: #14101c; border-bottom-color: #241a30; }
-body.incognito-window .tab.active { background: #2a2035; }
+body.incognito-window .tab.active { background: #14101c; border-color: #241a30; border-bottom-color: #14101c; }
 body.incognito-window .address-bar { background: #1e1728; border-color: #2e2140; }
 
 /* ---- Tab strip (also the window's drag region, frame:false) ---- */
@@ -66,23 +66,27 @@ body.incognito-window .address-bar { background: #1e1728; border-color: #2e2140;
   gap: 6px;
   max-width: 200px;
   min-width: 120px;
-  height: 30px;
+  height: 32px;
   padding: 0 10px;
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
   color: #9a9aa3;
   font-size: 12px;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
+  align-self: flex-end;
+  margin-bottom: -1px;
 }
 
 .tab.active {
-  background: #232328;
+  background: #0b0b0d;
   color: #f5f5f5;
+  border: 1px solid #1a1a1d;
+  border-bottom-color: #0b0b0d;
 }
 
 .tab.incognito { color: #c9a8f5; }
-.tab.incognito.active { background: #2a2035; color: #e6d9fa; }
+.tab.incognito.active { background: #14101c; color: #e6d9fa; border-color: #241a30; border-bottom-color: #14101c; }
 .incognito-tab-icon { flex-shrink: 0; }
 
 .tab-title {
@@ -163,11 +167,11 @@ body.incognito-window .address-bar { background: #1e1728; border-color: #2e2140;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #17171a;
-  border: 1px solid #262629;
+  background: #1e1e24;
+  border: 1px solid #2a2a32;
   border-radius: 999px;
-  padding: 0 10px;
-  height: 32px;
+  padding: 0 8px 0 4px;
+  height: 34px;
   margin: 0 6px;
 }
 .address-bar:focus-within { border-color: #3b7cf6; }
@@ -229,20 +233,20 @@ body.incognito-window .address-bar { background: #1e1728; border-color: #2e2140;
 .vpn-dot.connected { background: #2ecc71; box-shadow: 0 0 6px rgba(46, 204, 113, 0.7); }
 .vpn-dot.connecting { background: #f2b807; }
 
-/* ---- Profile (toolbar) ---- */
+/* ---- Profile inside address bar (Brave logo placement) ---- */
 .profile-icon-btn {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: none;
   padding: 0;
   cursor: pointer;
   overflow: hidden;
   flex-shrink: 0;
-  margin-left: 2px;
+  background: transparent;
 }
-.profile-icon-btn:hover { filter: brightness(1.1); }
-#toolbarAvatarSlot { display: block; }
+.profile-icon-btn:hover { filter: brightness(1.12); }
+#toolbarAvatarSlot { display: block; width: 100%; height: 100%; }
 #toolbarAvatarSlot svg, #toolbarAvatarSlot img {
   width: 100%;
   height: 100%;
@@ -251,13 +255,13 @@ body.incognito-window .address-bar { background: #1e1728; border-color: #2e2140;
   border-radius: 50%;
 }
 .toolbar-avatar-initial {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
 }
