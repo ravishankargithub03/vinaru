@@ -243,6 +243,45 @@ input {
   color: var(--muted);
 }
 
+.email-status.available {
+  color: #3dd68c;
+}
+
+.email-status.taken,
+.email-status.error {
+  color: #ef4b4b;
+}
+
+.email-suggestions {
+  margin-top: 4px;
+}
+
+.suggestions-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.suggestion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.suggestion-chip {
+  border: 1px solid var(--border);
+  background: #1a1a20;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.suggestion-chip:active {
+  border-color: #3b7cf6;
+}
+
 .section-label {
   padding: 10px 12px 0;
   font-weight: 700;
@@ -480,14 +519,38 @@ input {
 }
 
 .popup-list button:disabled,
-.menu-nav-item:disabled {
+.menu-nav-icon:disabled {
   opacity: 0.35;
   pointer-events: none;
 }
 
-.menu-nav-item svg {
-  flex-shrink: 0;
+.menu-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 2px;
+}
+
+.menu-nav-icon {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
   color: var(--muted);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.menu-nav-icon:active:not(:disabled) {
+  background: #1f1f23;
+}
+
+.menu-nav-icon svg {
+  flex-shrink: 0;
+  color: inherit;
 }
 
 .popup-list.muted {

@@ -4,13 +4,17 @@ import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
@@ -61,7 +65,16 @@ public class BrowserActivity extends AppCompatActivity {
         }
 
         TextView btnBottomTabs = findViewById(R.id.btnBottomTabs);
+        View btnBottomTabsHit = findViewById(R.id.btnBottomTabsHit);
+        View btnBottomNewTab = findViewById(R.id.btnBottomNewTab);
         styleTabCount(btnBottomTabs, tabCount);
+        if (tabCount <= 1) {
+            btnBottomTabsHit.setVisibility(View.GONE);
+            btnBottomNewTab.setVisibility(View.VISIBLE);
+        } else {
+            btnBottomNewTab.setVisibility(View.GONE);
+            btnBottomTabsHit.setVisibility(View.VISIBLE);
+        }
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -167,6 +180,10 @@ public class BrowserActivity extends AppCompatActivity {
 
         btnReload.setOnClickListener(v -> webView.reload());
 
+        ImageButton fabRefresh = findViewById(R.id.fabRefresh);
+        fabRefresh.setOnClickListener(v -> webView.reload());
+        setupDraggableFab(fabRefresh);
+
         findViewById(R.id.btnBottomHome).setOnClickListener(v -> returnToShell("home"));
         findViewById(R.id.btnBottomBookmark).setOnClickListener(v -> {
             String url = webView.getUrl();
@@ -192,7 +209,7 @@ public class BrowserActivity extends AppCompatActivity {
             if (imm != null) imm.showSoftInput(addressBar, InputMethodManager.SHOW_IMPLICIT);
         });
         findViewById(R.id.btnBottomNewTab).setOnClickListener(v -> returnToShell("newtab"));
-        btnBottomTabs.setOnClickListener(v -> returnToShell("tabs"));
+        btnBottomTabsHit.setOnClickListener(v -> returnToShell("tabs"));
         findViewById(R.id.btnBottomMore).setOnClickListener(v -> returnToShell("more"));
 
         addressBar.setOnEditorActionListener((v, actionId, event) -> {
@@ -214,11 +231,91 @@ public class BrowserActivity extends AppCompatActivity {
         webView.loadUrl(startUrl);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupDraggableFab(ImageButton fab) {
+        final SharedPreferences prefs = getSharedPreferences("vinaru_fab", MODE_PRIVATE);
+        final int touchSlop = ViewConfiguration.get(this).getScaledTouchSlop();
+
+        fab.post(() -> {
+            float savedX = prefs.getFloat("refresh_x", Float.NaN);
+            float savedY = prefs.getFloat("refresh_y", Float.NaN);
+            if (!Float.isNaN(savedX) && !Float.isNaN(savedY)) {
+                fab.setX(savedX);
+                fab.setY(savedY);
+                clampFab(fab);
+            }
+        });
+
+        fab.setOnTouchListener(new View.OnTouchListener() {
+            float downRawX;
+            float downRawY;
+            float startX;
+            float startY;
+            boolean dragging;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        downRawX = event.getRawX();
+                        downRawY = event.getRawY();
+                        startX = v.getX();
+                        startY = v.getY();
+                        dragging = false;
+                        return true;
+                    case MotionEvent.ACTION_MOVE: {
+                        float dx = event.getRawX() - downRawX;
+                        float dy = event.getRawY() - downRawY;
+                        if (!dragging && (Math.abs(dx) > touchSlop || Math.abs(dy) > touchSlop)) {
+                            dragging = true;
+                        }
+                        if (dragging) {
+                            v.setX(startX + dx);
+                            v.setY(startY + dy);
+                            clampFab(v);
+                        }
+                        return true;
+                    }
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        if (dragging) {
+                            prefs.edit()
+                                    .putFloat("refresh_x", v.getX())
+                                    .putFloat("refresh_y", v.getY())
+                                    .apply();
+                        } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                            v.performClick();
+                        }
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+    }
+
+    private void clampFab(View fab) {
+        ViewGroup parent = (ViewGroup) fab.getParent();
+        if (parent == null) return;
+        float maxX = Math.max(0, parent.getWidth() - fab.getWidth());
+        float maxY = Math.max(0, parent.getHeight() - fab.getHeight());
+        View bottomBar = findViewById(R.id.bottomBar);
+        float bottomReserve = bottomBar != null ? bottomBar.getHeight() : 0f;
+        float maxYAboveBar = Math.max(0, maxY - bottomReserve);
+        fab.setX(Math.max(0, Math.min(fab.getX(), maxX)));
+        fab.setY(Math.max(0, Math.min(fab.getY(), maxYAboveBar)));
+    }
+
     private void styleTabCount(TextView view, int count) {
-        view.setText(String.valueOf(Math.max(1, count)));
+        int n = Math.max(1, count);
+        view.setText(String.valueOf(n));
         view.setTypeface(Typeface.DEFAULT_BOLD);
-        view.setTextSize(13f);
+        view.setTextSize(12f);
+        view.setTextColor(0xFF9A9AA4);
         view.setGravity(android.view.Gravity.CENTER);
+        view.setBackgroundResource(R.drawable.bg_tabs_count);
+        view.setMinWidth((int) (22 * getResources().getDisplayMetrics().density));
+        view.setMinHeight((int) (22 * getResources().getDisplayMetrics().density));
     }
 
     private void returnToShell(String action) {

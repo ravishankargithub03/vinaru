@@ -34,6 +34,8 @@ import {
   normalizeUsername,
   isPasswordValid,
   passwordHint,
+  buildSuggestionPool,
+  SUGGESTIONS_WANTED,
 } from "./accounts.js";
 
 const SHORTCUTS = [
@@ -189,9 +191,12 @@ export default function App() {
   const [loginId, setLoginId] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [emailStatus, setEmailStatus] = useState("idle");
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [dob, setDob] = useState("");
   const [countryCode, setCountryCode] = useState(COUNTRIES[0].dial);
   const [mobileNumber, setMobileNumber] = useState("");
@@ -548,9 +553,12 @@ export default function App() {
     setLoginId("");
     setLoginPassword("");
     setFirstName("");
+    setMiddleName("");
     setLastName("");
     setUsername("");
     setEmailStatus("idle");
+    setSuggestions([]);
+    setSuggestionsLoading(false);
     setDob("");
     setCountryCode(COUNTRIES[0].dial);
     setMobileNumber("");
@@ -570,14 +578,51 @@ export default function App() {
       if (!username) setEmailStatus("idle");
       return undefined;
     }
+    let cancelled = false;
     setEmailStatus("checking");
     const timer = window.setTimeout(() => {
       checkEmailAvailable(`${normalizeUsername(username)}${EMAIL_DOMAIN}`)
-        .then((available) => setEmailStatus(available ? "available" : "taken"))
-        .catch(() => setEmailStatus("error"));
+        .then((available) => {
+          if (!cancelled) setEmailStatus(available ? "available" : "taken");
+        })
+        .catch(() => {
+          if (!cancelled) setEmailStatus("error");
+        });
     }, 250);
-    return () => window.clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, [username, authMode, registerStep, panel]);
+
+  useEffect(() => {
+    if (panel !== "manageProfile" || authMode !== "register" || registerStep !== 2) return undefined;
+    const pool = buildSuggestionPool(firstName, lastName);
+    let cancelled = false;
+    setSuggestions([]);
+    setSuggestionsLoading(pool.length > 0);
+
+    (async () => {
+      const available = [];
+      for (const candidate of pool) {
+        if (cancelled || available.length >= SUGGESTIONS_WANTED) break;
+        try {
+          const ok = await checkEmailAvailable(`${candidate}${EMAIL_DOMAIN}`);
+          if (ok) available.push(candidate);
+        } catch {
+          /* skip unreachable candidates */
+        }
+      }
+      if (!cancelled) {
+        setSuggestions(available);
+        setSuggestionsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [panel, authMode, registerStep, firstName, lastName]);
 
   async function persistAccount(result) {
     const user = result.user || {};
@@ -620,6 +665,10 @@ export default function App() {
         setAuthError("First name is required");
         return;
       }
+      if (!lastName.trim()) {
+        setAuthError("Last name is required");
+        return;
+      }
       setRegisterStep(2);
       return;
     }
@@ -634,6 +683,10 @@ export default function App() {
         return;
       }
       if (emailStatus === "checking") return;
+      if (emailStatus === "error") {
+        setAuthError("Can't reach accounts server. Keep the PC accounts service running on the same Wi‑Fi.");
+        return;
+      }
       setRegisterStep(3);
       return;
     }
@@ -682,7 +735,7 @@ export default function App() {
       }
       setAuthBusy(true);
       try {
-        const displayName = [firstName, lastName].map((s) => s.trim()).filter(Boolean).join(" ");
+        const displayName = [firstName, middleName, lastName].map((s) => s.trim()).filter(Boolean).join(" ");
         const email = `${normalizeUsername(username)}${EMAIL_DOMAIN}`;
         const mobile = `${countryCode}${mobileNumber.replace(/\D/g, "")}`;
         const result = await registerAccount({
@@ -920,7 +973,8 @@ export default function App() {
               {registerStep === 1 ? (
                 <>
                   <input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name *" />
-                  <input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" />
+                  <input value={middleName} onChange={(e) => setMiddleName(e.target.value)} placeholder="Middle name (optional)" />
+                  <input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name *" />
                 </>
               ) : null}
               {registerStep === 2 ? (
@@ -930,13 +984,37 @@ export default function App() {
                     onChange={(e) => setUsername(normalizeUsername(e.target.value))}
                     placeholder="Username *"
                     autoCapitalize="off"
+                    autoCorrect="off"
+                    spellCheck={false}
                   />
-                  <div className="auth-hint">
+                  <div className={`auth-hint email-status ${emailStatus}`}>
                     {username ? `${normalizeUsername(username)}${EMAIL_DOMAIN}` : `you${EMAIL_DOMAIN}`}
                     {emailStatus === "checking" ? " · checking…" : ""}
                     {emailStatus === "available" ? " · available" : ""}
                     {emailStatus === "taken" ? " · taken" : ""}
+                    {emailStatus === "error" ? " · can't reach server" : ""}
                   </div>
+                  {suggestionsLoading || suggestions.length > 0 ? (
+                    <div className="email-suggestions">
+                      <div className="suggestions-label">Suggestions</div>
+                      {suggestionsLoading ? (
+                        <div className="auth-hint">Finding available suggestions…</div>
+                      ) : (
+                        <div className="suggestion-chips">
+                          {suggestions.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              className="suggestion-chip"
+                              onClick={() => setUsername(s)}
+                            >
+                              {s}{EMAIL_DOMAIN}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
                 </>
               ) : null}
               {registerStep === 3 ? (
@@ -1008,7 +1086,14 @@ export default function App() {
                 ) : (
                   <span />
                 )}
-                <button type="submit" className="popup-primary" disabled={authBusy}>
+                <button
+                  type="submit"
+                  className="popup-primary"
+                  disabled={
+                    authBusy
+                    || (registerStep === 2 && (!username || emailStatus === "checking" || emailStatus === "taken"))
+                  }
+                >
                   {authBusy
                     ? "Please wait…"
                     : registerStep === 3 && !otpSent
@@ -1129,28 +1214,32 @@ export default function App() {
             <button type="button" onClick={() => { setPanel("tabs"); }}>Tabs ({tabs.length})</button>
             <button type="button" onClick={() => { openDownloadsPanel(); }}>Downloads</button>
             <button type="button" onClick={() => { showToast("Settings coming soon"); closePanels(); }}>Settings</button>
-            <button
-              type="button"
-              className="menu-nav-item"
-              disabled={!canGoBack}
-              onClick={() => {
-                goBack();
-              }}
-            >
-              <IconBack />
-              <span>Previous page</span>
-            </button>
-            <button
-              type="button"
-              className="menu-nav-item"
-              disabled={!canGoForward}
-              onClick={() => {
-                goForward();
-              }}
-            >
-              <IconForward />
-              <span>Next page</span>
-            </button>
+            <div className="menu-nav-row" role="group" aria-label="Page history">
+              <button
+                type="button"
+                className="menu-nav-icon"
+                disabled={!canGoBack}
+                onClick={() => {
+                  goBack();
+                }}
+                title="Previous page"
+                aria-label="Previous page"
+              >
+                <IconBack />
+              </button>
+              <button
+                type="button"
+                className="menu-nav-icon"
+                disabled={!canGoForward}
+                onClick={() => {
+                  goForward();
+                }}
+                title="Next page"
+                aria-label="Next page"
+              >
+                <IconForward />
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
@@ -1443,18 +1532,21 @@ export default function App() {
         <button type="button" className="bottom-btn" onClick={focusAddress} title="Search" aria-label="Search">
           <IconSearch />
         </button>
-        <button type="button" className="bottom-btn" onClick={() => addTab(false)} title="New tab" aria-label="New tab">
-          <IconPlus />
-        </button>
-        <button
-          type="button"
-          className={`bottom-btn tabs-count-btn ${panel === "tabs" ? "active" : ""}`}
-          onClick={() => togglePanel("tabs")}
-          title="Tabs"
-          aria-label={`Tabs, ${tabs.length} open`}
-        >
-          <span className="tabs-count">{tabs.length}</span>
-        </button>
+        {tabs.length <= 1 ? (
+          <button type="button" className="bottom-btn" onClick={() => addTab(false)} title="New tab" aria-label="New tab">
+            <IconPlus />
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={`bottom-btn tabs-count-btn ${panel === "tabs" ? "active" : ""}`}
+            onClick={() => togglePanel("tabs")}
+            title="Tabs"
+            aria-label={`Tabs, ${tabs.length} open`}
+          >
+            <span className="tabs-count">{tabs.length}</span>
+          </button>
+        )}
         <button
           type="button"
           className={`bottom-btn ${panel === "more" ? "active" : ""}`}

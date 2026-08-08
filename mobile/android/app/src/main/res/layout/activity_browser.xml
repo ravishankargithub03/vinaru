@@ -1,149 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/browserRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0B0B0F"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/privateLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#241A30"
-        android:gravity="center"
-        android:paddingVertical="4dp"
-        android:text="Private browsing"
-        android:textColor="#D4B8FF"
-        android:textSize="12sp"
-        android:visibility="gone" />
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#141418"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="8dp">
-
-        <EditText
-            android:id="@+id/addressBar"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:background="@drawable/address_bar_bg"
-            android:hint="Search or enter address"
-            android:imeOptions="actionGo"
-            android:inputType="textUri"
-            android:paddingHorizontal="14dp"
-            android:singleLine="true"
-            android:textColor="#F2F2F5"
-            android:textColorHint="#8A8A94"
-            android:textSize="14sp" />
-
-        <ImageButton
-            android:id="@+id/btnReload"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Reload"
-            android:padding="8dp"
-            android:src="@android:drawable/ic_popup_sync"
-            android:tint="#C8C8D0" />
-    </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:indeterminate="false"
-        android:max="100"
-        android:progress="0"
-        android:progressTint="#3B7CF6"
-        android:visibility="gone" />
-
-    <WebView
-        android:id="@+id/webView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!-- Persistent bottom chrome (matches shell): Home, Bookmark, Search, New, Tabs, More -->
-    <LinearLayout
-        android:id="@+id/bottomBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#121216"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="4dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp">
-
-        <ImageButton
-            android:id="@+id/btnBottomHome"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Home"
-            android:src="@android:drawable/ic_menu_myplaces"
-            android:tint="#9A9AA4" />
-
-        <ImageButton
-            android:id="@+id/btnBottomBookmark"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Bookmarks"
-            android:src="@android:drawable/ic_menu_save"
-            android:tint="#9A9AA4" />
-
-        <ImageButton
-            android:id="@+id/btnBottomSearch"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Search"
-            android:src="@android:drawable/ic_menu_search"
-            android:tint="#9A9AA4" />
-
-        <ImageButton
-            android:id="@+id/btnBottomNewTab"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="New tab"
-            android:src="@android:drawable/ic_menu_add"
-            android:tint="#9A9AA4" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/btnBottomTabs"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:id="@+id/privateLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#241A30"
             android:gravity="center"
-            android:text="1"
-            android:textColor="#9A9AA4"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:contentDescription="Tabs" />
+            android:paddingVertical="4dp"
+            android:text="Private browsing"
+            android:textColor="#D4B8FF"
+            android:textSize="12sp"
+            android:visibility="gone" />
 
-        <ImageButton
-            android:id="@+id/btnBottomMore"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="More"
-            android:src="@android:drawable/ic_menu_more"
-            android:tint="#9A9AA4" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#141418"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="8dp">
+
+            <EditText
+                android:id="@+id/addressBar"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/address_bar_bg"
+                android:hint="Search or enter address"
+                android:imeOptions="actionGo"
+                android:inputType="textUri"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true"
+                android:textColor="#F2F2F5"
+                android:textColorHint="#8A8A94"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btnReload"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Reload"
+                android:padding="8dp"
+                android:src="@drawable/ic_nav_refresh" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="0"
+            android:progressTint="#3B7CF6"
+            android:visibility="gone" />
+
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Persistent bottom chrome (matches shell): Home, Bookmark, Search, New|Tabs, More -->
+        <LinearLayout
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#121216"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="4dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
+
+            <ImageButton
+                android:id="@+id/btnBottomHome"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Home"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_nav_home" />
+
+            <ImageButton
+                android:id="@+id/btnBottomBookmark"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Bookmarks"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_nav_bookmark" />
+
+            <ImageButton
+                android:id="@+id/btnBottomSearch"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Search"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_nav_search" />
+
+            <!-- Same slot as landing page: either + (1 tab) or tab count (2+) -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/btnBottomNewTab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="New tab"
+                    android:padding="10dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_nav_plus" />
+
+                <FrameLayout
+                    android:id="@+id/btnBottomTabsHit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:contentDescription="Tabs"
+                    android:focusable="true"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/btnBottomTabs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_tabs_count"
+                        android:gravity="center"
+                        android:minWidth="22dp"
+                        android:minHeight="22dp"
+                        android:text="1"
+                        android:textColor="#9A9AA4"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+            </FrameLayout>
+
+            <ImageButton
+                android:id="@+id/btnBottomMore"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="More"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_nav_more" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+    <ImageButton
+        android:id="@+id/fabRefresh"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="72dp"
+        android:background="@drawable/bg_fab_refresh"
+        android:contentDescription="Refresh"
+        android:elevation="6dp"
+        android:padding="14dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_nav_refresh" />
+</FrameLayout>

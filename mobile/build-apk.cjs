@@ -213,10 +213,32 @@ function bumpVersionCode() {
   console.log(`  versionCode: ${current} → ${next}`);
 }
 
+function lanIps() {
+  const ips = [];
+  const nets = os.networkInterfaces();
+  for (const entries of Object.values(nets)) {
+    for (const net of entries || []) {
+      const family = net.family;
+      if ((family === 'IPv4' || family === 4) && !net.internal) ips.push(net.address);
+    }
+  }
+  return ips;
+}
+
 function buildVite() {
   console.log('\n[7/10] Building React app (outDir=dist-apk)…');
   const distApk = path.join(ROOT, 'dist-apk');
   if (fs.existsSync(distApk)) fs.rmSync(distApk, { recursive: true, force: true });
+
+  // Physical Android devices cannot use 10.0.2.2 — bake host LAN IPs into the APK.
+  const ips = lanIps();
+  if (ips.length) {
+    const urls = ips.map((ip) => `http://${ip}:4200`).join(',');
+    process.env.VITE_ACCOUNTS_URLS = urls;
+    if (!process.env.VITE_ACCOUNTS_URL) process.env.VITE_ACCOUNTS_URL = `http://${ips[0]}:4200`;
+    console.log(`  Accounts hosts for device: ${urls}`);
+  }
+
   run('npx vite build --outDir dist-apk', { cwd: ROOT });
 }
 
