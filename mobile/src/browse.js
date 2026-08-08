@@ -12,7 +12,7 @@ export function resolveInput(raw) {
 }
 
 /** Open URL inside Vinaru (native WebView) — never hand off to Chrome/other browsers. */
-export async function openUrl(url) {
+export async function openUrl(url, { incognito = false } = {}) {
   if (!url) return;
 
   if (!Capacitor.isNativePlatform()) {
@@ -20,7 +20,7 @@ export async function openUrl(url) {
     return;
   }
 
-  await VinaruBrowser.open({ url });
+  await VinaruBrowser.open({ url, incognito: Boolean(incognito) });
 }
 
 export async function closeBrowser() {

@@ -170,7 +170,7 @@ body.incognito-window .address-bar { background: #1e1728; border-color: #2e2140;
   background: #1e1e24;
   border: 1px solid #2a2a32;
   border-radius: 999px;
-  padding: 0 8px 0 4px;
+  padding: 0 8px 0 10px;
   height: 34px;
   margin: 0 6px;
 }
@@ -233,16 +233,17 @@ body.incognito-window .address-bar { background: #1e1728; border-color: #2e2140;
 .vpn-dot.connected { background: #2ecc71; box-shadow: 0 0 6px rgba(46, 204, 113, 0.7); }
 .vpn-dot.connecting { background: #f2b807; }
 
-/* ---- Profile inside address bar (Brave logo placement) ---- */
+/* ---- Profile (toolbar right, next to VPN / menu) ---- */
 .profile-icon-btn {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: none;
   padding: 0;
   cursor: pointer;
   overflow: hidden;
   flex-shrink: 0;
+  margin-left: 2px;
   background: transparent;
 }
 .profile-icon-btn:hover { filter: brightness(1.12); }
@@ -255,13 +256,13 @@ body.incognito-window .address-bar { background: #1e1728; border-color: #2e2140;
   border-radius: 50%;
 }
 .toolbar-avatar-initial {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #fff;
 }

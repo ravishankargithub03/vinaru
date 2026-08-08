@@ -17,9 +17,12 @@ public class VinaruBrowserPlugin extends Plugin {
             return;
         }
 
+        boolean incognito = Boolean.TRUE.equals(call.getBoolean("incognito", false));
+
         getActivity().runOnUiThread(() -> {
             Intent intent = new Intent(getContext(), BrowserActivity.class);
             intent.putExtra(BrowserActivity.EXTRA_URL, url.trim());
+            intent.putExtra(BrowserActivity.EXTRA_INCOGNITO, incognito);
             getActivity().startActivity(intent);
             call.resolve();
         });

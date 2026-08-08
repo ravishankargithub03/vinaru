@@ -12,20 +12,25 @@ const SHORTCUTS = [
   { title: "Ruachvi", url: "https://ruachvi.com" },
 ];
 
-const IconHome = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <path d="M3 11l9-8 9 8M5 10v10h14V10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+const IconBack = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
-const IconBookmark = () => (
+const IconForward = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-    <path d="M6 4h12v17l-6-3.5L6 21V4z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 const IconSearch = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
     <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8" />
     <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+const IconPlus = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 const IconMore = () => (
@@ -35,9 +40,17 @@ const IconMore = () => (
     <circle cx="12" cy="19" r="1.7" fill="currentColor" />
   </svg>
 );
-const IconShield = () => (
+const IconVpn = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
     <path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+  </svg>
+);
+const IconIncognito = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+    <path d="M3 13c1.5-4 4.5-6 9-6s7.5 2 9 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    <circle cx="7" cy="14.5" r="2.6" stroke="currentColor" strokeWidth="1.6" />
+    <circle cx="17" cy="14.5" r="2.6" stroke="currentColor" strokeWidth="1.6" />
+    <path d="M9.6 14.5h4.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
 const IconClose = () => (
@@ -49,9 +62,11 @@ const IconClose = () => (
 function newTab({ url = "", incognito = false } = {}) {
   return {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    title: url ? "Loading…" : "New Tab",
+    title: url ? "Loading…" : incognito ? "Private Tab" : "New Tab",
     url,
     incognito,
+    history: url ? [url] : [],
+    histIndex: url ? 0 : -1,
   };
 }
 
@@ -72,17 +87,21 @@ export default function App() {
   const [tabs, setTabs] = useState(() => [newTab()]);
   const [activeId, setActiveId] = useState(() => tabs[0].id);
   const [draft, setDraft] = useState("");
-  const [starred, setStarred] = useState(() => new Set());
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [tabsOpen, setTabsOpen] = useState(false);
+  const [panel, setPanel] = useState(null); // 'profile' | 'vpn' | 'more' | 'tabs' | null
   const [toast, setToast] = useState("");
+  const [vpnConnected, setVpnConnected] = useState(false);
+  const [vpnConnecting, setVpnConnecting] = useState(false);
 
   const active = useMemo(() => tabs.find((t) => t.id === activeId) || tabs[0], [tabs, activeId]);
+  const canGoBack = (active?.histIndex ?? -1) > 0 || Boolean(active?.url);
+  const canGoForward = (active?.histIndex ?? -1) >= 0 && (active?.histIndex ?? -1) < (active?.history?.length ?? 0) - 1;
 
   const showToast = useCallback((msg) => {
     setToast(msg);
     window.setTimeout(() => setToast(""), 1800);
   }, []);
+
+  const closePanels = useCallback(() => setPanel(null), []);
 
   const updateActive = useCallback(
     (patch) => {
@@ -95,13 +114,28 @@ export default function App() {
     async (raw) => {
       const url = resolveInput(raw);
       if (!url) return;
+      const incognito = Boolean(active?.incognito);
       setDraft(displayUrl(url));
-      updateActive({ url, title: hostnameOf(url) });
-      setMenuOpen(false);
-      setTabsOpen(false);
-      await openUrl(url);
+
+      setTabs((prev) =>
+        prev.map((t) => {
+          if (t.id !== activeId) return t;
+          const base = (t.history || []).slice(0, (t.histIndex ?? -1) + 1);
+          const history = [...base, url];
+          return {
+            ...t,
+            url,
+            title: hostnameOf(url),
+            history,
+            histIndex: history.length - 1,
+          };
+        })
+      );
+
+      closePanels();
+      await openUrl(url, { incognito });
     },
-    [updateActive]
+    [active?.incognito, activeId, closePanels]
   );
 
   useEffect(() => {
@@ -111,12 +145,8 @@ export default function App() {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return undefined;
     const sub = CapApp.addListener("backButton", ({ canGoBack: histBack }) => {
-      if (menuOpen) {
-        setMenuOpen(false);
-        return;
-      }
-      if (tabsOpen) {
-        setTabsOpen(false);
+      if (panel) {
+        setPanel(null);
         return;
       }
       if (histBack) window.history.back();
@@ -125,15 +155,15 @@ export default function App() {
     return () => {
       sub.then((h) => h.remove()).catch(() => {});
     };
-  }, [menuOpen, tabsOpen]);
+  }, [panel]);
 
   function addTab(incognito = false) {
     const tab = newTab({ incognito });
     setTabs((prev) => [...prev, tab]);
     setActiveId(tab.id);
     setDraft("");
-    setMenuOpen(false);
-    setTabsOpen(false);
+    closePanels();
+    if (incognito) showToast("Private tab — browsing won’t save history");
   }
 
   function closeTab(id) {
@@ -150,10 +180,15 @@ export default function App() {
   }
 
   function goHome() {
-    updateActive({ url: "", title: "New Tab" });
+    // Reset page history so Back/Forward don't point at stale entries after Home.
+    updateActive({
+      url: "",
+      title: active?.incognito ? "Private Tab" : "New Tab",
+      history: [],
+      histIndex: -1,
+    });
     setDraft("");
-    setMenuOpen(false);
-    setTabsOpen(false);
+    closePanels();
   }
 
   function focusAddress() {
@@ -162,103 +197,179 @@ export default function App() {
       input.focus();
       input.select();
     }
-    setMenuOpen(false);
-    setTabsOpen(false);
+    closePanels();
   }
 
-  function toggleStar() {
-    if (!active?.url) {
-      showToast("Open a page to bookmark it");
+  function goBack() {
+    if (!active) return;
+    if ((active.histIndex ?? -1) > 0) {
+      const nextIndex = active.histIndex - 1;
+      const url = active.history[nextIndex];
+      setTabs((prev) =>
+        prev.map((t) => (t.id === activeId ? { ...t, histIndex: nextIndex, url, title: hostnameOf(url) } : t))
+      );
+      setDraft(displayUrl(url));
+      closePanels();
+      openUrl(url, { incognito: Boolean(active.incognito) });
       return;
     }
-    setStarred((prev) => {
-      const next = new Set(prev);
-      if (next.has(active.url)) {
-        next.delete(active.url);
-        showToast("Bookmark removed");
-      } else {
-        next.add(active.url);
-        showToast("Bookmark saved");
-      }
-      return next;
-    });
+    if (active.url) goHome();
+  }
+
+  function goForward() {
+    if (!active || !canGoForward) return;
+    const nextIndex = active.histIndex + 1;
+    const url = active.history[nextIndex];
+    setTabs((prev) =>
+      prev.map((t) => (t.id === activeId ? { ...t, histIndex: nextIndex, url, title: hostnameOf(url) } : t))
+    );
+    setDraft(displayUrl(url));
+    closePanels();
+    openUrl(url, { incognito: Boolean(active.incognito) });
+  }
+
+  function toggleVpn() {
+    if (vpnConnecting) return;
+    if (vpnConnected) {
+      setVpnConnected(false);
+      showToast("VPN disconnected");
+      return;
+    }
+    setVpnConnecting(true);
+    window.setTimeout(() => {
+      setVpnConnecting(false);
+      setVpnConnected(true);
+      showToast("VPN connected (simulated)");
+    }, 900);
+  }
+
+  function togglePanel(name) {
+    setPanel((cur) => (cur === name ? null : name));
   }
 
   return (
     <div className={`shell ${active?.incognito ? "incognito" : ""}`}>
-      {/* Brave-style top address bar — profile icon on the left */}
-      <form
-        className="top-omnibox"
-        onSubmit={(e) => {
-          e.preventDefault();
-          navigate(draft);
-        }}
-      >
-        <button
-          type="button"
-          className="profile-in-bar"
-          onClick={() => showToast("Profiles coming soon")}
-          title="Profile"
-          aria-label="Profile"
-        >
-          <span className="avatar">V</span>
-        </button>
+      {panel ? <button type="button" className="popup-backdrop" aria-label="Close panel" onClick={closePanels} /> : null}
 
-        <input
-          id="addressInput"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder="Search Vinaru or type URL"
-          spellCheck={false}
-          autoCapitalize="off"
-          autoCorrect="off"
-          enterKeyHint="go"
-        />
-
-        <button
-          type="button"
-          className="omnibox-icon"
-          onClick={() => showToast("Shield / privacy coming soon")}
-          title="Shield"
-          aria-label="Shield"
+      <div className="top-row">
+        <form
+          className="top-omnibox"
+          onSubmit={(e) => {
+            e.preventDefault();
+            navigate(draft);
+          }}
         >
-          <IconShield />
-        </button>
-        <button
-          type="button"
-          className={`omnibox-icon ${active?.url && starred.has(active.url) ? "starred" : ""}`}
-          onClick={toggleStar}
-          title="Bookmark"
-          aria-label="Bookmark"
-        >
-          <IconBookmark />
-        </button>
-      </form>
+          <input
+            id="addressInput"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder={active?.incognito ? "Private search or URL" : "Search Vinaru or type URL"}
+            spellCheck={false}
+            autoCapitalize="off"
+            autoCorrect="off"
+            enterKeyHint="go"
+          />
+        </form>
 
-      {menuOpen ? (
-        <div className="more-menu">
-          <button type="button" onClick={() => addTab(false)}>
-            New tab
-          </button>
-          <button type="button" onClick={() => addTab(true)}>
-            New private tab
-          </button>
-          <button type="button" onClick={goHome}>
-            Home / New Tab page
+        <div className="top-actions">
+          <button
+            type="button"
+            className={`top-icon-btn vpn-btn ${vpnConnected ? "on" : ""} ${vpnConnecting ? "busy" : ""}`}
+            onClick={() => togglePanel("vpn")}
+            title="VPN"
+            aria-label="VPN"
+          >
+            <IconVpn />
+            <span className={`vpn-dot ${vpnConnected ? "connected" : ""} ${vpnConnecting ? "connecting" : ""}`} />
           </button>
           <button
             type="button"
-            onClick={() => {
-              setMenuOpen(false);
-              showToast("Settings coming soon");
-            }}
+            className="profile-icon-btn"
+            onClick={() => togglePanel("profile")}
+            title="Profile"
+            aria-label="Profile"
           >
-            Settings
+            <span className="avatar">V</span>
           </button>
+        </div>
+      </div>
+
+      {panel === "profile" ? (
+        <div className="popup panel-top-right" role="dialog" aria-label="Profile">
+          <div className="popup-header">
+            <span>Guest profile</span>
+            <button type="button" className="popup-close" onClick={closePanels}>
+              ×
+            </button>
+          </div>
+          <div className="popup-body profile-body">
+            <span className="avatar large">V</span>
+            <div className="profile-greeting">Hi, Guest!</div>
+            <button type="button" className="popup-primary" onClick={() => showToast("Profile manager coming soon")}>
+              Manage profile
+            </button>
+          </div>
+          <div className="popup-list">
+            <button type="button" onClick={() => { addTab(true); }}>
+              <IconIncognito />
+              <span>New private tab</span>
+            </button>
+          </div>
         </div>
       ) : null}
 
-      {tabsOpen ? (
+      {panel === "vpn" ? (
+        <div className="popup panel-top-right" role="dialog" aria-label="VPN">
+          <div className="popup-header">
+            <span>VPN</span>
+            <button type="button" className="popup-close" onClick={closePanels}>
+              ×
+            </button>
+          </div>
+          <div className="popup-body vpn-body">
+            <div className="vpn-status">{vpnConnecting ? "Connecting…" : vpnConnected ? "Connected" : "Not connected"}</div>
+            {vpnConnected ? <div className="vpn-badge">Simulated</div> : null}
+            <button
+              type="button"
+              className={`popup-primary ${vpnConnected ? "danger" : ""}`}
+              disabled={vpnConnecting}
+              onClick={toggleVpn}
+            >
+              {vpnConnecting ? "Connecting…" : vpnConnected ? "Disconnect" : "Connect"}
+            </button>
+          </div>
+          <div className="popup-list muted">
+            <div className="vpn-row"><span>Server</span><span>Auto</span></div>
+            <div className="vpn-row"><span>Protocol</span><span>WireGuard</span></div>
+            <div className="vpn-row"><span>Kill switch</span><span>Off</span></div>
+          </div>
+        </div>
+      ) : null}
+
+      {panel === "more" ? (
+        <div className="popup panel-bottom-right" role="dialog" aria-label="Menu">
+          <div className="popup-header">
+            <span>Menu</span>
+            <button type="button" className="popup-close" onClick={closePanels}>
+              ×
+            </button>
+          </div>
+          <div className="popup-pair">
+            <button type="button" onClick={() => { showToast("Bookmarks coming soon"); closePanels(); }}>Bookmarks</button>
+            <button type="button" onClick={() => { showToast("History coming soon"); closePanels(); }}>History</button>
+          </div>
+          <div className="popup-list">
+            <button type="button" onClick={() => { addTab(false); }}>New tab</button>
+            <button type="button" onClick={() => { addTab(true); }}>New private tab</button>
+            <button type="button" onClick={() => { goHome(); }}>Home / New Tab page</button>
+            <button type="button" onClick={() => { setPanel("tabs"); }}>Tabs ({tabs.length})</button>
+            <button type="button" onClick={() => { showToast("Downloads coming soon"); closePanels(); }}>Downloads</button>
+            <button type="button" onClick={() => { showToast("Settings coming soon"); closePanels(); }}>Settings</button>
+          </div>
+        </div>
+      ) : null}
+
+      {panel === "tabs" ? (
         <div className="tabs-sheet">
           <div className="tabs-sheet-header">
             <span>Tabs ({tabs.length})</span>
@@ -274,11 +385,11 @@ export default function App() {
                 className={`tabs-sheet-item ${tab.id === activeId ? "active" : ""} ${tab.incognito ? "incognito" : ""}`}
                 onClick={() => {
                   setActiveId(tab.id);
-                  setTabsOpen(false);
+                  closePanels();
                 }}
               >
                 <span className="tabs-sheet-title">{tab.title}</span>
-                <span className="tabs-sheet-url">{tab.url ? hostnameOf(tab.url) : "New Tab"}</span>
+                <span className="tabs-sheet-url">{tab.url ? hostnameOf(tab.url) : tab.incognito ? "Private Tab" : "New Tab"}</span>
                 <span
                   className="tabs-sheet-close"
                   onClick={(e) => {
@@ -296,8 +407,12 @@ export default function App() {
       ) : null}
 
       <main className="newtab">
+        {active?.incognito ? <div className="private-badge">Private</div> : null}
         <div className="logo">V</div>
-        <h1>Vinaru</h1>
+        <h1>{active?.incognito ? "Private browsing" : "Vinaru"}</h1>
+        {active?.incognito ? (
+          <p className="private-note">Pages you visit in this tab won’t be saved to history on this device.</p>
+        ) : null}
 
         <form
           className="search-card"
@@ -314,46 +429,35 @@ export default function App() {
           />
         </form>
 
-        <div className="shortcuts">
-          {SHORTCUTS.map((site) => (
-            <button key={site.url} type="button" className="shortcut" onClick={() => navigate(site.url)}>
-              <span className="shortcut-icon">{site.title[0]}</span>
-              <span className="shortcut-label">{hostnameOf(site.url)}</span>
-            </button>
-          ))}
-        </div>
+        {!active?.incognito ? (
+          <div className="shortcuts">
+            {SHORTCUTS.map((site) => (
+              <button key={site.url} type="button" className="shortcut" onClick={() => navigate(site.url)}>
+                <span className="shortcut-icon">{site.title[0]}</span>
+                <span className="shortcut-label">{hostnameOf(site.url)}</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
       </main>
 
-      {/* Brave-style bottom toolbar */}
       <nav className="bottom-bar" aria-label="Browser tools">
-        <button type="button" className="bottom-btn" onClick={goHome} title="Home" aria-label="Home">
-          <IconHome />
+        <button type="button" className="bottom-btn" disabled={!canGoBack} onClick={goBack} title="Previous page" aria-label="Previous page">
+          <IconBack />
         </button>
-        <button type="button" className="bottom-btn" onClick={toggleStar} title="Bookmarks" aria-label="Bookmarks">
-          <IconBookmark />
+        <button type="button" className="bottom-btn" disabled={!canGoForward} onClick={goForward} title="Next page" aria-label="Next page">
+          <IconForward />
         </button>
         <button type="button" className="bottom-btn" onClick={focusAddress} title="Search" aria-label="Search">
           <IconSearch />
         </button>
-        <button
-          type="button"
-          className={`bottom-btn tabs-count-btn ${tabsOpen ? "active" : ""}`}
-          onClick={() => {
-            setTabsOpen((v) => !v);
-            setMenuOpen(false);
-          }}
-          title="Tabs"
-          aria-label={`Tabs, ${tabs.length} open`}
-        >
-          <span className="tabs-count">{tabs.length}</span>
+        <button type="button" className="bottom-btn" onClick={() => addTab(false)} title="New page" aria-label="New page">
+          <IconPlus />
         </button>
         <button
           type="button"
-          className={`bottom-btn ${menuOpen ? "active" : ""}`}
-          onClick={() => {
-            setMenuOpen((v) => !v);
-            setTabsOpen(false);
-          }}
+          className={`bottom-btn ${panel === "more" ? "active" : ""}`}
+          onClick={() => togglePanel("more")}
           title="More"
           aria-label="More"
         >

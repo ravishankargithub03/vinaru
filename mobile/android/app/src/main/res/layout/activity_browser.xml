@@ -6,6 +6,18 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/privateLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#241A30"
+        android:gravity="center"
+        android:paddingVertical="4dp"
+        android:text="Private browsing"
+        android:textColor="#D4B8FF"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
     <!-- Match desktop chrome: nav + address + actions -->
     <LinearLayout
         android:layout_width="match_parent"

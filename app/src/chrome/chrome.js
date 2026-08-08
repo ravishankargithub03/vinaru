@@ -234,10 +234,6 @@ const DEFAULT_AVATAR_SVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/
   <path d="M14,100 Q14,66 50,66 Q86,66 86,100 Z" fill="#e9e9ec" />
 </svg>`;
 
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-}
-
 function renderToolbarAvatar(profile) {
   if (profile && profile.picture) {
     toolbarAvatarSlot.innerHTML = `<img src="${escapeHtml(profile.picture)}" alt="" />`;

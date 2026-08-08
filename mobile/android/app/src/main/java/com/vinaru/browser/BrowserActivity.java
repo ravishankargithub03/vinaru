@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -14,23 +15,28 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class BrowserActivity extends AppCompatActivity {
     public static final String EXTRA_URL = "url";
+    public static final String EXTRA_INCOGNITO = "incognito";
 
     private WebView webView;
     private EditText addressBar;
     private ProgressBar progress;
     private ImageButton btnBack;
     private ImageButton btnForward;
+    private boolean incognito;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
+
+        incognito = getIntent().getBooleanExtra(EXTRA_INCOGNITO, false);
 
         webView = findViewById(R.id.webView);
         addressBar = findViewById(R.id.addressBar);
@@ -39,11 +45,13 @@ public class BrowserActivity extends AppCompatActivity {
         btnForward = findViewById(R.id.btnForward);
         ImageButton btnReload = findViewById(R.id.btnReload);
         ImageButton btnHome = findViewById(R.id.btnHome);
+        TextView privateLabel = findViewById(R.id.privateLabel);
+        if (privateLabel != null) {
+            privateLabel.setVisibility(incognito ? View.VISIBLE : View.GONE);
+        }
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
-        settings.setDomStorageEnabled(true);
-        settings.setDatabaseEnabled(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
         settings.setBuiltInZoomControls(true);
@@ -51,6 +59,25 @@ public class BrowserActivity extends AppCompatActivity {
         settings.setSupportMultipleWindows(false);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+
+        if (incognito) {
+            // Private mode: no disk cache / form data. Do NOT toggle global
+            // CookieManager.setAcceptCookie(false) — that breaks the Capacitor shell.
+            settings.setDomStorageEnabled(true);
+            settings.setDatabaseEnabled(false);
+            settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+            settings.setSaveFormData(false);
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false);
+            webView.clearCache(true);
+            webView.clearHistory();
+            webView.clearFormData();
+        } else {
+            settings.setDomStorageEnabled(true);
+            settings.setDatabaseEnabled(true);
+            settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+            CookieManager.getInstance().setAcceptCookie(true);
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+        }
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -82,11 +109,6 @@ public class BrowserActivity extends AppCompatActivity {
                     progress.setVisibility(View.VISIBLE);
                     progress.setProgress(newProgress);
                 }
-            }
-
-            @Override
-            public void onReceivedTitle(WebView view, String title) {
-                // keep address bar focused on URL display
             }
         });
 
@@ -158,6 +180,12 @@ public class BrowserActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if (webView != null) {
+            if (incognito) {
+                webView.clearCache(true);
+                webView.clearHistory();
+                webView.clearFormData();
+                CookieManager.getInstance().removeSessionCookies(null);
+            }
             webView.stopLoading();
             webView.destroy();
         }

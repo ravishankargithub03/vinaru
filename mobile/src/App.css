@@ -38,46 +38,101 @@ input {
   padding-top: var(--safe-top);
   padding-bottom: var(--safe-bottom);
   background: var(--bg);
+  position: relative;
 }
 
 .shell.incognito {
   --panel: #1a1520;
   --omnibox: #2a2035;
+  --bg: #120e18;
 }
 
-/* ---- Brave-style top omnibox ---- */
-.top-omnibox {
+/* ---- Top: address + VPN + profile (right) ---- */
+.top-row {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin: 10px 12px 8px;
-  padding: 4px 6px 4px 4px;
-  min-height: 48px;
+  gap: 8px;
+  padding: 10px 12px 8px;
+}
+
+.top-omnibox {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
   background: var(--omnibox);
-  border-radius: 28px;
+  border-radius: 22px;
   border: 1px solid transparent;
 }
 
 .top-omnibox:focus-within {
   border-color: rgba(59, 124, 246, 0.55);
-  box-shadow: 0 0 0 1px rgba(59, 124, 246, 0.2);
 }
 
-/* Profile icon — Brave logo placement (left inside bar) */
-.profile-in-bar {
-  width: 36px;
-  height: 36px;
+.top-omnibox input {
+  flex: 1;
+  min-width: 0;
   border: 0;
-  border-radius: 50%;
+  outline: 0;
   background: transparent;
-  padding: 0;
-  display: grid;
-  place-items: center;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.top-omnibox input::placeholder {
+  color: var(--muted);
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   flex-shrink: 0;
 }
 
-.profile-in-bar:active {
-  filter: brightness(1.12);
+.top-icon-btn,
+.profile-icon-btn {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  position: relative;
+}
+
+.top-icon-btn:active,
+.profile-icon-btn:active {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.vpn-btn.on {
+  color: #2ecc71;
+}
+
+.vpn-dot {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #5a5a62;
+}
+
+.vpn-dot.connected {
+  background: #2ecc71;
+  box-shadow: 0 0 6px rgba(46, 204, 113, 0.7);
+}
+
+.vpn-dot.connecting {
+  background: #f2b807;
 }
 
 .avatar {
@@ -90,73 +145,182 @@ input {
   place-items: center;
   font-size: 14px;
   font-weight: 700;
-  box-shadow: 0 0 0 2px rgba(59, 124, 246, 0.25);
 }
 
-.top-omnibox input {
-  flex: 1;
-  min-width: 0;
+.avatar.large {
+  width: 56px;
+  height: 56px;
+  font-size: 22px;
+}
+
+/* ---- Popups (profile / VPN top-right, more bottom-right) ---- */
+.popup-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
   border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--text);
-  font-size: 15px;
-  padding: 0 4px;
-}
-
-.top-omnibox input::placeholder {
-  color: var(--muted);
-}
-
-.omnibox-icon {
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
   padding: 0;
+  margin: 0;
+  background: transparent;
 }
 
-.omnibox-icon:active {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text);
+.popup {
+  position: absolute;
+  z-index: 30;
+  width: min(300px, calc(100vw - 24px));
+  background: #17171a;
+  border: 1px solid #262629;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 }
 
-.omnibox-icon.starred {
-  color: #f5c542;
+.panel-top-right {
+  top: calc(58px + var(--safe-top));
+  right: 12px;
 }
 
-/* ---- More menu (Brave-like sheet from top) ---- */
-.more-menu {
+.panel-bottom-right {
+  bottom: calc(64px + var(--safe-bottom));
+  right: 12px;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  border-bottom: 1px solid #232328;
+}
+
+.popup-close {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.popup-close:active {
+  background: #232328;
+  color: #fff;
+}
+
+.popup-body {
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  background: #1e1e26;
-  border-bottom: 1px solid var(--border);
-  margin: 0 12px 8px;
-  border-radius: 14px;
-  padding: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #232328;
 }
 
-.more-menu button {
+.profile-greeting {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.popup-primary {
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 0;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.popup-primary.danger {
+  background: #ef4b4b;
+}
+
+.popup-primary:disabled {
+  opacity: 0.6;
+}
+
+.vpn-status {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vpn-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #f2b807;
+  border: 1px solid #4a3c10;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.popup-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 14px 14px 6px;
+}
+
+.popup-pair button {
+  border: 0;
+  border-radius: 10px;
+  background: #1f1f23;
+  color: var(--text);
+  padding: 12px 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.popup-pair button:active {
+  background: #2a2a30;
+}
+
+.popup-list {
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+}
+
+.popup-list button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   text-align: left;
   border: 0;
   background: transparent;
   color: var(--text);
-  padding: 14px 14px;
+  padding: 12px 12px;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 14px;
 }
 
-.more-menu button:active {
-  background: #2a2a34;
+.popup-list button:active {
+  background: #1f1f23;
 }
 
-/* ---- Tabs switcher sheet ---- */
+.popup-list.muted {
+  gap: 8px;
+  padding: 12px 16px 16px;
+  font-size: 12px;
+}
+
+.vpn-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+}
+
+.vpn-row span:last-child {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ---- Tabs sheet ---- */
 .tabs-sheet {
   margin: 0 12px 8px;
   background: #1e1e26;
@@ -167,6 +331,8 @@ input {
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  position: relative;
+  z-index: 25;
 }
 
 .tabs-sheet-header {
@@ -262,6 +428,32 @@ input {
   overflow-y: auto;
 }
 
+.shell.incognito .newtab {
+  background:
+    radial-gradient(ellipse at top, rgba(160, 100, 255, 0.14), transparent 55%),
+    var(--bg);
+}
+
+.private-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #d4b8ff;
+  border: 1px solid #4a3560;
+  border-radius: 999px;
+  padding: 4px 10px;
+  margin-bottom: 12px;
+}
+
+.private-note {
+  margin: -12px 0 20px;
+  max-width: 280px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .logo {
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 700;
@@ -271,9 +463,13 @@ input {
   margin-bottom: 8px;
 }
 
+.shell.incognito .logo {
+  color: #b48cff;
+}
+
 h1 {
   margin: 0 0 24px;
-  font-size: 32px;
+  font-size: 28px;
   letter-spacing: -0.4px;
 }
 
@@ -337,7 +533,7 @@ h1 {
   white-space: nowrap;
 }
 
-/* ---- Brave-style bottom toolbar ---- */
+/* ---- Bottom: prev, next, search, new page, 3-dots ---- */
 .bottom-bar {
   display: flex;
   align-items: center;
@@ -361,23 +557,14 @@ h1 {
   padding: 0;
 }
 
-.bottom-btn:active,
+.bottom-btn:disabled {
+  opacity: 0.35;
+}
+
+.bottom-btn:active:not(:disabled),
 .bottom-btn.active {
   color: var(--text);
   background: rgba(255, 255, 255, 0.06);
-}
-
-.tabs-count-btn .tabs-count {
-  min-width: 22px;
-  height: 22px;
-  padding: 0 5px;
-  border: 1.8px solid currentColor;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  display: grid;
-  place-items: center;
-  line-height: 1;
 }
 
 .toast {
@@ -391,6 +578,6 @@ h1 {
   padding: 10px 16px;
   border-radius: 999px;
   font-size: 13px;
-  z-index: 20;
+  z-index: 40;
   white-space: nowrap;
 }
