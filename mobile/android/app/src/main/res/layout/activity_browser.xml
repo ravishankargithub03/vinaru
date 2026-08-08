@@ -18,61 +18,19 @@
         android:textSize="12sp"
         android:visibility="gone" />
 
-    <!-- Match desktop chrome: nav + address + actions -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#141418"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="4dp"
+        android:paddingHorizontal="8dp"
         android:paddingVertical="8dp">
-
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back"
-            android:padding="8dp"
-            android:src="@android:drawable/ic_media_previous"
-            android:tint="#C8C8D0" />
-
-        <ImageButton
-            android:id="@+id/btnForward"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Forward"
-            android:padding="8dp"
-            android:src="@android:drawable/ic_media_next"
-            android:tint="#C8C8D0" />
-
-        <ImageButton
-            android:id="@+id/btnReload"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Reload"
-            android:padding="8dp"
-            android:src="@android:drawable/ic_popup_sync"
-            android:tint="#C8C8D0" />
-
-        <ImageButton
-            android:id="@+id/btnHome"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Home"
-            android:padding="8dp"
-            android:src="@android:drawable/ic_menu_revert"
-            android:tint="#C8C8D0" />
 
         <EditText
             android:id="@+id/addressBar"
             android:layout_width="0dp"
-            android:layout_height="36dp"
-            android:layout_marginHorizontal="4dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
             android:background="@drawable/address_bar_bg"
             android:hint="Search or enter address"
@@ -83,6 +41,17 @@
             android:textColor="#F2F2F5"
             android:textColorHint="#8A8A94"
             android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/btnReload"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Reload"
+            android:padding="8dp"
+            android:src="@android:drawable/ic_popup_sync"
+            android:tint="#C8C8D0" />
     </LinearLayout>
 
     <ProgressBar
@@ -101,4 +70,80 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
+    <!-- Persistent bottom chrome (matches shell): Home, Bookmark, Search, New, Tabs, More -->
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#121216"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="4dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
+
+        <ImageButton
+            android:id="@+id/btnBottomHome"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Home"
+            android:src="@android:drawable/ic_menu_myplaces"
+            android:tint="#9A9AA4" />
+
+        <ImageButton
+            android:id="@+id/btnBottomBookmark"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Bookmarks"
+            android:src="@android:drawable/ic_menu_save"
+            android:tint="#9A9AA4" />
+
+        <ImageButton
+            android:id="@+id/btnBottomSearch"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Search"
+            android:src="@android:drawable/ic_menu_search"
+            android:tint="#9A9AA4" />
+
+        <ImageButton
+            android:id="@+id/btnBottomNewTab"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="New tab"
+            android:src="@android:drawable/ic_menu_add"
+            android:tint="#9A9AA4" />
+
+        <TextView
+            android:id="@+id/btnBottomTabs"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="#9A9AA4"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:contentDescription="Tabs" />
+
+        <ImageButton
+            android:id="@+id/btnBottomMore"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="More"
+            android:src="@android:drawable/ic_menu_more"
+            android:tint="#9A9AA4" />
+    </LinearLayout>
 </LinearLayout>
