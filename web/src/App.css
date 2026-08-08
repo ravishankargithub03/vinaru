@@ -91,21 +91,33 @@
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: #7a7a82;
+  color: #9a9aa3;
   background: transparent;
   border: 1px solid #33333a;
   border-radius: 999px;
   padding: 8px 18px;
-  cursor: not-allowed;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.pill:hover:not(.pill-disabled):not(.pill-active) {
+  color: #ffffff;
+  border-color: #55555e;
 }
 
 .pill-active {
   color: #ffffff;
   border-color: #3b7cf6;
   cursor: default;
+}
+
+.pill-disabled,
+.pill:disabled {
+  color: #5a5a62;
+  cursor: not-allowed;
+  opacity: 0.75;
 }
 
 .soon {

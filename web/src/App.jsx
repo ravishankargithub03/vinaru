@@ -30,17 +30,22 @@ const DownloadIcon = () => (
 const DOWNLOADS = {
   windows: { href: "/downloads/vinaru-setup-1.0.0.exe", label: "Download for Windows" },
   linux: { href: "/downloads/vinaru-1.0.0-linux.zip", label: "Download for Linux" },
+  android: { href: "/downloads/vinaru-1.0.0.apk", label: "Download for Android" },
 };
 
 function detectPlatform() {
   const ua = navigator.userAgent;
+  if (/Android/i.test(ua)) return "android";
   if (/Linux/i.test(ua) && !/Android/i.test(ua)) return "linux";
   return "windows";
 }
 
 function Pill({ children, active, disabled, onClick }) {
+  const className = ["pill", active ? "pill-active" : "", disabled ? "pill-disabled" : ""]
+    .filter(Boolean)
+    .join(" ");
   return (
-    <button className={`pill ${active ? "pill-active" : ""}`} disabled={disabled} onClick={onClick}>
+    <button className={className} disabled={disabled} onClick={disabled ? undefined : onClick} type="button">
       {children}
     </button>
   );
@@ -69,7 +74,9 @@ export default function App() {
       <p className="download-hint">
         {platform === "linux"
           ? "Download, unzip, then run ./vinaru-browser to launch the browser."
-          : "If Chrome warns, choose Keep. If Windows says “protected your PC”, click More info → Run anyway."}
+          : platform === "android"
+            ? "Install the APK, then open Vinaru. Allow “Install unknown apps” if Android asks."
+            : "If Chrome warns, choose Keep. If Windows says “protected your PC”, click More info → Run anyway."}
       </p>
 
       <div className="platforms">
@@ -97,8 +104,8 @@ export default function App() {
             <span>MOBILE</span>
           </div>
           <div className="pill-row">
-            <Pill disabled>
-              Android <span className="soon">soon</span>
+            <Pill active={platform === "android"} onClick={() => setPlatform("android")}>
+              Android
             </Pill>
             <Pill disabled>
               iPhone <span className="soon">soon</span>

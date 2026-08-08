@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-apk/
+.vite/
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/keystore.properties
+android/hs_err_pid*.log
+android/**/hs_err_pid*.log
+*.keystore
+*.log
+.DS_Store

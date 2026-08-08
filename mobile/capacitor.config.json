@@ -1,0 +1,14 @@
+{
+  "appId": "com.vinaru.browser",
+  "appName": "Vinaru",
+  "webDir": "dist-apk",
+  "server": {
+    "androidScheme": "https",
+    "hostname": "capacitor.app"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

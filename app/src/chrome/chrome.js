@@ -22,6 +22,35 @@ let addressBarFocused = false;
 const RELOAD_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 1 3 6.7M3 12V6m0 6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const STOP_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>`;
 
+/** Known search-result URL shapes → show only the query in the address bar. */
+const SEARCH_RESULT_PATTERNS = [
+  { host: /(^|\.)google\./i, path: /^\/search$/, param: "q" },
+  { host: /(^|\.)bing\./i, path: /^\/search$/, param: "q" },
+  { host: /(^|\.)duckduckgo\./i, path: /^\/$/, param: "q" },
+];
+
+function extractSearchQuery(url) {
+  try {
+    const u = new URL(url);
+    const match = SEARCH_RESULT_PATTERNS.find(
+      (p) => p.host.test(u.hostname) && p.path.test(u.pathname)
+    );
+    if (!match) return null;
+    const q = u.searchParams.get(match.param);
+    return q && q.trim() ? q : null;
+  } catch {
+    return null;
+  }
+}
+
+function displayUrlForAddressBar(url) {
+  if (!url || url.startsWith("attach://")) return "";
+  const searchQuery = extractSearchQuery(url);
+  if (searchQuery) return searchQuery;
+  // Chrome-style: hide https:// (keep http:// so insecure pages stay obvious)
+  return url.replace(/^https:\/\//i, "");
+}
+
 function activeTab() {
   return currentTabs.find((t) => t.active);
 }
@@ -59,7 +88,7 @@ function renderToolbar() {
   reloadBtn.title = tab.isLoading ? "Stop" : "Reload (Ctrl+R)";
 
   if (!addressBarFocused) {
-    addressInput.value = tab.url.startsWith("attach://") ? "" : tab.url;
+    addressInput.value = displayUrlForAddressBar(tab.url);
   }
 
   securityIndicator.classList.toggle("insecure", !tab.isSecure);
@@ -116,6 +145,11 @@ homeBtn.addEventListener("click", () => activeTab() && window.attach.nav.home(ac
 
 addressInput.addEventListener("focus", () => {
   addressBarFocused = true;
+  const tab = activeTab();
+  // Keep the clean query visible for search pages; only show full URL for normal sites.
+  if (tab && tab.url && !extractSearchQuery(tab.url) && !tab.url.startsWith("attach://")) {
+    addressInput.value = tab.url;
+  }
   addressInput.select();
 });
 addressInput.addEventListener("blur", () => {
